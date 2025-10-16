@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function TodoForm({ addTodo }) {
   const [value, setValue] = useState("");
@@ -8,8 +8,9 @@ function TodoForm({ addTodo }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!value || !category || !tempo) return;
+
     addTodo(value, category, tempo);
-    console.log(value, category, tempo);
+
     setValue("");
     setCategory("");
     setTempo("");
@@ -22,18 +23,18 @@ function TodoForm({ addTodo }) {
         <input
           type="text"
           value={value}
-          placeholder="Digite o titulo"
-          onChange={(e) => setValue(e.target.value)} //resumindo está colocando o valor do input na variavel
+          placeholder="Digite o título"
+          onChange={(e) => setValue(e.target.value)}
         />
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          // e = evento , target = é o input, value = valor
-          <option>Selecione uma categoria</option>
-          <option value="Trabalho">Trabalho</option>
-          <option value="Pessoal">Pessoal</option>
-          <option value="Estudo">Estudo</option>
+          <option value="">Selecione uma categoria</option>
+          <option value="ESTUDOS">Estudo</option>
+          <option value="TRABALHO">Trabalho</option>
+          <option value="LAZER">Lazer</option>
         </select>
+
         <input
-          type="text"
+          type="number"
           value={tempo}
           placeholder="Tempo estimado (em horas)"
           onChange={(e) => setTempo(e.target.value)}

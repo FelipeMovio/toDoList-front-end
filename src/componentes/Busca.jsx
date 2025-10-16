@@ -1,5 +1,3 @@
-import React from "react";
-
 function Busca({ busca, setBusca }) {
   return (
     <div className="search">

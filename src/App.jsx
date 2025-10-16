@@ -36,10 +36,15 @@ function App() {
         isCompleted: false,
       };
 
+      console.log("Enviando para backend:", novaTarefa); // 👈 debug
+
       const response = await axios.post(API_URL, novaTarefa);
       setTodos((prev) => [...prev, response.data]);
     } catch (error) {
       console.error("Erro ao adicionar tarefa:", error);
+      if (error.response) {
+        console.error("Erro do backend:", error.response.data); // 👈 mostra o erro do backend
+      }
     }
   };
 
