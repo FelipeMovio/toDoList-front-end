@@ -93,7 +93,7 @@ function App() {
       <Busca busca={busca} setBusca={setBusca} />
       <Filtro filter={filter} setFilter={setFilter} setSort={setSort} />
       <div className="todo-list">
-        {todos.length === 0 && <p>Lista vazia!</p>}
+        {todos.length === 0 && <p className="vazia">Lista vazia!</p>}
         {todos
           .filter((todo) =>
             filter === "All"

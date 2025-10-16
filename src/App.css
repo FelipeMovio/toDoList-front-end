@@ -103,3 +103,8 @@ select {
 .filter-options div {
   flex: 1 1 0;
 }
+
+.vazia {
+  text-align: center;
+  font-size: 1.2rem;
+}
