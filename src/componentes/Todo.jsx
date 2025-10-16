@@ -2,7 +2,7 @@ function Todo({ todo, removeTodo, completeTodo }) {
   return (
     <div
       className="todo"
-      style={{ textDecoration: todo.isCompleted ? "line-through" : "" }}
+      style={{ textDecoration: todo.completed ? "line-through" : "" }}
     >
       <div className="content">
         <p>{todo.titulo}</p>
@@ -11,7 +11,7 @@ function Todo({ todo, removeTodo, completeTodo }) {
       </div>
       <div>
         <button className="complete" onClick={() => completeTodo(todo.id)}>
-          {todo.isCompleted ? "Desmarcar" : "Completar"}
+          {todo.completed ? "Desmarcar" : "Completar"}
         </button>
         <button className="remove" onClick={() => removeTodo(todo.id)}>
           X

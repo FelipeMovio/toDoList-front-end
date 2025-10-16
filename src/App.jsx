@@ -33,7 +33,7 @@ function App() {
         titulo,
         categoria,
         tempo: Number(tempo),
-        isCompleted: false,
+        completed: false,
       };
 
       console.log("Enviando para backend:", novaTarefa); // 👈 debug
@@ -59,20 +59,31 @@ function App() {
 
   const completeTodo = async (id) => {
     try {
+      // 1. Busca a tarefa pelo ID
       const tarefa = todos.find((t) => t.id === id);
       if (!tarefa) return;
 
+      // 2. Cria objeto atualizado (inverte completed)
       const atualizada = {
         ...tarefa,
-        isCompleted: !tarefa.isCompleted,
+        completed: !tarefa.completed,
       };
 
-      const response = await axios.put(`${API_URL}/${id}`, atualizada);
+      // 3. Envia a tarefa atualizada para o backend (PUT)
+      const response = await axios.put(
+        `http://localhost:8080/api/forms/${id}`,
+        atualizada
+      );
+
+      // 4. Substitui a tarefa no estado pela versão atualizada do backend
       const nova = response.data;
 
       setTodos((prev) => prev.map((t) => (t.id === id ? nova : t)));
     } catch (error) {
       console.error("Erro ao completar tarefa:", error);
+      if (error.response) {
+        console.error("Resposta do backend:", error.response.data);
+      }
     }
   };
 
@@ -88,8 +99,8 @@ function App() {
             filter === "All"
               ? true
               : filter === "Completed"
-              ? todo.isCompleted
-              : !todo.isCompleted
+              ? todo.completed
+              : !todo.completed
           )
           .filter((todo) =>
             todo.titulo.toLowerCase().includes(busca.toLowerCase())
