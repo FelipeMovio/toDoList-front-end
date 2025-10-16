@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import "./App.css";
 import Todo from "./componentes/Todo";
 import TodoForm from "./componentes/TodoForm";
@@ -6,48 +7,69 @@ import Busca from "./componentes/Busca";
 import Filtro from "./componentes/Filtro";
 
 function App() {
-  //Constantes abaixo
-
-  const [todos, setTodos] = useState([]); // Armazenamento de dados, usando o "useState" pois assim é possivel a manipulação e gerenciamentos de dados
-
+  const [todos, setTodos] = useState([]);
   const [busca, setBusca] = useState("");
-
   const [filter, setFilter] = useState("All");
-
   const [sort, setSort] = useState("Asc");
 
-  //Funções abaixo
+  const API_URL = "http://localhost:8080/api/forms";
 
-  function addTodo(text, category, tempo) {
-    const newTodos = [
-      ...todos,
-      {
-        id: Math.floor(Math.random() * 10000), // formala para o id continuar ate o numro 10000
-        text,
-        category,
-        tempo,
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const fetchTodos = async () => {
+    try {
+      const response = await axios.get(API_URL);
+      setTodos(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar tarefas:", error);
+    }
+  };
+
+  const addTodo = async (titulo, categoria, tempo) => {
+    try {
+      const novaTarefa = {
+        titulo,
+        categoria,
+        tempo: Number(tempo),
         isCompleted: false,
-      },
-    ];
+      };
 
-    setTodos(newTodos);
-  }
+      const response = await axios.post(API_URL, novaTarefa);
+      setTodos((prev) => [...prev, response.data]);
+    } catch (error) {
+      console.error("Erro ao adicionar tarefa:", error);
+    }
+  };
 
-  function removeTodo(id) {
-    const newTodos = [...todos];
-    const filteredTodos = newTodos.filter((todo) =>
-      todo.id !== id ? todo : null
-    );
-    setTodos(filteredTodos);
-  }
+  const removeTodo = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    } catch (error) {
+      console.error("Erro ao deletar tarefa:", error);
+    }
+  };
 
-  function completeTodo(id) {
-    const newTodos = [...todos];
-    newTodos.map((todo) =>
-      todo.id === id ? (todo.isCompleted = !todo.isCompleted) : todo
-    );
-    setTodos(newTodos);
-  }
+  const completeTodo = async (id) => {
+    try {
+      const tarefa = todos.find((t) => t.id === id);
+      if (!tarefa) return;
+
+      const atualizada = {
+        ...tarefa,
+        isCompleted: !tarefa.isCompleted,
+      };
+
+      const response = await axios.put(`${API_URL}/${id}`, atualizada);
+      const nova = response.data;
+
+      setTodos((prev) => prev.map((t) => (t.id === id ? nova : t)));
+    } catch (error) {
+      console.error("Erro ao completar tarefa:", error);
+    }
+  };
 
   return (
     <div className="app">
@@ -55,9 +77,7 @@ function App() {
       <Busca busca={busca} setBusca={setBusca} />
       <Filtro filter={filter} setFilter={setFilter} setSort={setSort} />
       <div className="todo-list">
-        <div className="todo-vazio">
-          {todos.length === 0 && <p>Lista vazia!</p>}
-        </div>
+        {todos.length === 0 && <p>Lista vazia!</p>}
         {todos
           .filter((todo) =>
             filter === "All"
@@ -67,12 +87,12 @@ function App() {
               : !todo.isCompleted
           )
           .filter((todo) =>
-            todo.text.toLowerCase().includes(busca.toLowerCase())
+            todo.titulo.toLowerCase().includes(busca.toLowerCase())
           )
           .sort((a, b) =>
             sort === "Asc"
-              ? a.text.localeCompare(b.text)
-              : b.text.localeCompare(a.text)
+              ? a.titulo.localeCompare(b.titulo)
+              : b.titulo.localeCompare(a.titulo)
           )
           .map((todo) => (
             <Todo
